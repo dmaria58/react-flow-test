@@ -17,5 +17,18 @@
     "min": "uglifyjs flow.js -o flowmin.js"
   },
   "author": "Maria",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmaria58/react-flow-test.git"
+  },
+  "keywords": [
+    "react",
+    "test",
+    "flow"
+  ],
+  "bugs": {
+    "url": "https://github.com/dmaria58/react-flow-test/issues"
+  },
+  "homepage": "https://github.com/dmaria58/react-flow-test#readme"
 }
