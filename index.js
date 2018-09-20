@@ -8,50 +8,105 @@ const timeType = {
 
 let funList ={};
 //时间列表
-const flowTimeObject= {};
+//const flowTimeObject= {};
 
-let flowTimeMode ={};
+let timeStep = "";
 
 let tnum = 0;
 
 let isflowcheck = true;
+
+//模块错误则不往下执行
+let errorType = {};
+
+//模块方法列表
+let flowFucList = {};
+
+//已经走过的流程
+let flowDoneList = {};
+
+const doPlistObject = {};
+
 const flowImport = ({id,FlowMent,doMent,doLists,doid}) => {
+  if(errorType[doid] === undefined){
+  	errorType[doid] = true;
+  }
+  
   FlowMent.type.prototype.componentDidMount=()=>{
     FlowMent.type.prototype.componentDidMount;
     funList[doid]=doMent(eval('this'),id);
-    flowFunc(funList[doid],doLists,id,doid);
+    flowFunc(
+    	funList[doid],
+    	doLists,
+    	id,
+    	doid,
+    	);
+    doFunListf(doid,id);
+  }
+  FlowMent.type.prototype.componentWillUnmount=()=>{
+  	clearFunDetail(doid)
+  	FlowMent.type.prototype.componentWillUnmount;
   }
 }
+//注销页面注销所有记录
+const clearFunDetail = (doid) => {
+	delete errorType[doid];
+	delete funList[doid];
+	delete flowFucList[doid];
+	delete doPlistObject[doid];
+	delete flowDoneList[doid];
+	clearTimeout(timeStep);
+}
 
-const flowFunc = (funList,doList,id,doid) => {	
-	for(let key in doList){		
-		flowTimeObject[doid] = flowTimeObject[doid]?flowTimeObject[doid]:0;		
+const getTimeFunList = (doList,doid) => {
+	if(!flowFucList[doid]){
+		flowFucList[doid] = getFlist(doList);
+		
+	}
+}
+const getFlist = (doList,doid) => {
+	let flist = [];
+	let timeList = [];
+	let inum = 0;
+	for(let key in doList){
 		let data = doList[key];
-		for(let num = 0 ;num<data.length;num++){
-			let list = data[num];
-			if(!list.STEP_TIME || !list.doMent || !list.id  || !list.funKey|| !list.num){
-				console.log("%c 【ERROR】doList["+num+"] 格式错误，STEP_TIME doMent funKey id num字段不可缺少", "color:red");
-				return;
-			}		
-					
-			if(!flowTimeMode[key] && flowTimeObject[doid]==0){
-				flowTimeMode[key]=[timeType[list.STEP_TIME]];
-				flowTimeObject[doid] += timeType[list.STEP_TIME]?timeType[list.STEP_TIME]:list.STEP_TIME;
-			}
-			else if(!flowTimeMode[key] && flowTimeObject[doid]){
-				flowTimeObject[doid] += timeType[list.STEP_TIME]?timeType[list.STEP_TIME]:list.STEP_TIME;
-				flowTimeMode[key]=[flowTimeObject[doid]];
-			}
-			else{
-				flowTimeObject[doid] += timeType[list.STEP_TIME]?timeType[list.STEP_TIME]:list.STEP_TIME;
-				flowTimeMode[key].push(flowTimeObject[doid]);				
-			}
+		data.map((list,i)=>{
+			
+				//有默认类型选默认类型时间，如果没有时间定义取 300
+				let t = list.STEP_TIME?(timeType[list.STEP_TIME]?timeType[list.STEP_TIME]:list.STEP_TIME):timeType['QUICK_TYPE'];
+				if(timeList.length >=1){
+					t = parseInt(t)+parseInt(timeList[timeList.length-1]);
+				}	
+				list.testKey = key;
+				list.testTime = t;
+				list.funNum = inum;
+				flist.push(list);
+				timeList.push(t);
+				inum++;
+			
+		})
+	}
+	return flist;
+}
 
-
-			if(list.doMent && funList[list.doMent] && id == list.id){
-				
-				setTimeout(()=>{					    			
-					funList[list.doMent](list.funKey);					
+const doFunListf = (doid,id)=>{
+	let doPlist = doPlistObject[doid];
+	if(!flowDoneList[doid]){
+		flowDoneList[doid]={};
+	}
+	let i = 0;
+	for(let key in doPlist){
+		if(i == key && !flowDoneList[doid][key]){
+			flowDoneList[doid][key] = key
+			let funList = doPlist[key].funList;
+			let list = doPlist[key].list;
+			let keyTest = list.testKey
+				timeStep = setTimeout(()=>{		
+					if(errorType[doid] === false || !doPlistObject[doid]){
+						clearTimeout(timeStep);
+						return;
+					}		    			
+					funList[list.doMent](list.funKey);				
 					let disc = list.description?list.description:"";
 					if(list.checkReactDo){
 						let ischeckReactDo = true;
@@ -70,25 +125,53 @@ const flowFunc = (funList,doList,id,doid) => {
 							}
 						}
 						else{
-							console.log("%c 【"+key+"】"+list.num+" "+list.doMent +" 格式定义错误", "color:red");
-							return
+							console.log("%c 【"+keyTest+"】"+list.num+" "+list.doMent +" 格式定义错误", "color:red");
+							errorType[doid] = false;
+							return;
 						}
 						//验证报错提醒
 						if(ischeckReactDo == false){
-							console.log("%c 【"+key+"】"+list.num+" "+list.doMent +"验证出错","color:red",returndata);
+							console.log("%c 【"+keyTest+"】"+list.num+" "+list.doMent +"验证出错","color:red",returndata);
+							errorType[doid] = false;
+							return;
 						}
 						else{
-							console.log("%c 【"+key+"】【验证】"+list.num+" "+list.doMent +" "+disc, "color:blue")	
+							console.log("%c 【"+keyTest+"】【验证】"+list.num+" "+list.doMent +" "+disc, "color:blue")	
 						}
 							
 					}
 					else{
-						console.log("%c 【"+key+"】"+list.num+" "+list.doMent +" "+disc, "color:green")	
+						console.log("%c 【"+keyTest+"】"+list.num+" "+list.doMent +" "+disc, "color:green")	
 					}							
-				},flowTimeMode[key][num])
-			}
-		}	
+			    },list.testTime)
+		}
+		i++;
+
 	}
+	
+}
+
+
+const  flowFunc = (funList,doList,id,doid) => {	
+    getTimeFunList(doList,doid);	
+	if(!doPlistObject[doid]){
+		doPlistObject[doid]=[]
+	}
+	let doPlist = doPlistObject[doid]
+	
+	flowFucList[doid].map((list,inum)=>{
+			if(!list.STEP_TIME || !list.doMent || !list.id  || !list.funKey|| !list.num){
+				console.log("%c 【ERROR】doList["+num+"] 格式错误，STEP_TIME doMent funKey id num字段不可缺少", "color:red");
+				return;
+			}		
+	
+			let key = list.testKey;
+
+			if(list.doMent && funList[list.doMent] && id == list.id  ){
+				doPlistObject[doid][list.funNum] = {funList:funList,list:list};
+			}		
+	})
+	return;
 }
 
 
