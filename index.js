@@ -32,8 +32,8 @@ const flowImport = ({id,FlowMent,doMent,doLists,doid}) => {
   	errorType[doid] = true;
   }
   
-  FlowMent.type.prototype.componentDidMount=()=>{
-    FlowMent.type.prototype.componentDidMount;
+  FlowMent.type.prototype.componentWillMount=()=>{
+    //FlowMent.type.prototype.componentDidMount;
     funList[doid]=doMent(eval('this'),id);
     flowFunc(
     	funList[doid],
@@ -44,8 +44,10 @@ const flowImport = ({id,FlowMent,doMent,doLists,doid}) => {
     doFunListf(doid,id);
   }
   FlowMent.type.prototype.componentWillUnmount=()=>{
-  	clearFunDetail(doid)
-  	FlowMent.type.prototype.componentWillUnmount;
+  	if(id === doid){
+		clearFunDetail(doid)
+  	}  	
+  	//FlowMent.type.prototype.componentWillUnmount;
   }
 }
 //注销页面注销所有记录

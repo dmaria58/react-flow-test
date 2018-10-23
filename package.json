@@ -1,6 +1,6 @@
 {
   "name": "react-test-flow",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "React test",
   "main": "flowmin.js",
   "directories": {

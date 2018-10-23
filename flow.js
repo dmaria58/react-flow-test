@@ -45,15 +45,17 @@ var flowImport = function flowImport(_ref) {
 		errorType[doid] = true;
 	}
 
-	FlowMent.type.prototype.componentDidMount = function () {
-		FlowMent.type.prototype.componentDidMount;
+	FlowMent.type.prototype.componentWillMount = function () {
+		//FlowMent.type.prototype.componentDidMount;
 		funList[doid] = doMent(eval('this'), id);
 		flowFunc(funList[doid], doLists, id, doid);
 		doFunListf(doid, id);
 	};
 	FlowMent.type.prototype.componentWillUnmount = function () {
-		clearFunDetail(doid);
-		FlowMent.type.prototype.componentWillUnmount;
+		if (id === doid) {
+			clearFunDetail(doid);
+		}
+		//FlowMent.type.prototype.componentWillUnmount;
 	};
 };
 //注销页面注销所有记录
