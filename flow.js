@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var _arguments = arguments;
 var timeType = {
 	TABLE_SOURCE: 3000,
 	NOMAL_SOURCE: 1000,
@@ -44,18 +45,23 @@ var flowImport = function flowImport(_ref) {
 	if (errorType[doid] === undefined) {
 		errorType[doid] = true;
 	}
-
+	var ocomponentWillMount = FlowMent.type.prototype.componentWillMount;
 	FlowMent.type.prototype.componentWillMount = function () {
-		//FlowMent.type.prototype.componentDidMount;
 		funList[doid] = doMent(eval('this'), id);
 		flowFunc(funList[doid], doLists, id, doid);
 		doFunListf(doid, id);
+		if (ocomponentWillMount) {
+			ocomponentWillMount.apply(eval('this'), _arguments);
+		}
 	};
+	var ocomponentWillUnmount = FlowMent.type.prototype.componentWillUnmount;
 	FlowMent.type.prototype.componentWillUnmount = function () {
 		if (id === doid) {
 			clearFunDetail(doid);
 		}
-		//FlowMent.type.prototype.componentWillUnmount;
+		if (ocomponentWillUnmount) {
+			ocomponentWillUnmount.apply(eval('this'), _arguments);
+		}
 	};
 };
 //注销页面注销所有记录
